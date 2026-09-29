@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Money Management | Personal Finance</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#182230;--muted:#718096;--line:#e7edf4;--green:#159b72;--red:#e15b64;--blue:#526de5;--shadow:0 8px 28px #20304a0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);padding:18px max(22px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px}.logo{background:#e3f7ef;color:var(--green);border-radius:12px;padding:9px;font-size:21px}
+header small{color:var(--muted)}main{max-width:1180px;margin:30px auto;padding:0 22px}.top{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}.top h1{margin:0;font-size:27px}.top p{margin:4px 0 0;color:var(--muted)}button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;background:var(--green);color:white}button:hover{filter:brightness(.96)}button.secondary{background:#edf2f7;color:#344054}button.danger{background:#fff0f0;color:#c63e4a;padding:6px 9px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:var(--shadow)}.metric-label{color:var(--muted);font-size:13px;font-weight:600}.metric{font-size:26px;font-weight:800;margin:6px 0}.metric-foot{font-size:12px;color:var(--muted)}.metric-icon{float:right;border-radius:10px;padding:8px;background:#f0f5ff;color:var(--blue)}
+.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-bottom:18px}.panel h2{font-size:16px;margin:0 0 14px}.panel-head{display:flex;justify-content:space-between;align-items:center}.panel-head select{border:1px solid var(--line);border-radius:8px;padding:7px;background:#fff;color:var(--ink)}
+.chart{height:220px;display:flex;align-items:end;gap:14px;padding:15px 5px 0;border-bottom:1px solid var(--line)}.bar-group{height:100%;flex:1;display:flex;align-items:end;justify-content:center;gap:4px;position:relative}.bar{width:35%;min-width:8px;border-radius:6px 6px 0 0;background:#7d91ee;min-height:2px}.bar.exp{background:#57c7a1}.bar-label{position:absolute;bottom:-25px;font-size:11px;color:var(--muted)}.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:32px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.budget-row{margin:17px 0}.budget-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px}.track{height:9px;background:#edf1f6;border-radius:9px;overflow:hidden}.fill{height:100%;background:var(--green);border-radius:9px}.fill.over{background:var(--red)}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--muted);font-size:12px;font-weight:600;padding:10px 8px}td{padding:12px 8px;border-top:1px solid var(--line);font-size:13px}td.amount{text-align:right;font-weight:700}.income{color:var(--green)}.expense{color:var(--red)}.tag{background:#f1f4f8;border-radius:6px;padding:4px 7px;font-size:11px;color:#596579}.empty{text-align:center;padding:30px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#17203380;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.modal.show{display:flex}.dialog{background:#fff;border-radius:18px;padding:23px;width:min(440px,100%);box-shadow:0 20px 60px #0003}.dialog h2{margin:0 0 16px}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:700;color:#596579;margin-bottom:5px}.field input,.field select{width:100%;padding:11px;border:1px solid #dce3ec;border-radius:9px;font:inherit}.actions{display:flex;justify-content:end;gap:8px;margin-top:18px}.hint{font-size:12px;color:var(--muted);margin-top:12px}
+@media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}}@media(max-width:480px){main{margin:20px auto;padding:0 14px}.cards{gap:9px}.card{padding:13px}.metric{font-size:21px}.top{align-items:start;gap:12px}.top h1{font-size:23px}.top button{padding:10px;font-size:12px}.panel{padding:14px;overflow:auto}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="logo">₹</span> Pennywise</div><small>Personal money manager</small></header>
+<main>
+<div class="top"><div><h1>Money overview</h1><p>Track your income, spending, and budget in one place.</p></div><button id="addBtn">＋ Add transaction</button></div>
+<section class="cards">
+<div class="card"><span class="metric-icon">◈</span><div class="metric-label">Current balance</div><div class="metric" id="balance">₹0</div><div class="metric-foot">Income minus expenses</div></div>
+<div class="card"><span class="metric-icon">↗</span><div class="metric-label">Total income</div><div class="metric income" id="income">₹0</div><div class="metric-foot">All recorded income</div></div>
+<div class="card"><span class="metric-icon">↘</span><div class="metric-label">Total expenses</div><div class="metric expense" id="expenses">₹0</div><div class="metric-foot">All recorded spending</div></div>
+<div class="card"><span class="metric-icon">◎</span><div class="metric-label">Savings rate</div><div class="metric" id="rate">0%</div><div class="metric-foot">Based on total income</div></div>
+</section>
+<section class="layout">
+<div class="panel"><div class="panel-head"><h2>Cash flow</h2><select id="period"><option value="6">Last 6 months</option><option value="12">Last 12 months</option></select></div><div class="chart" id="chart"></div><div class="legend"><span><i class="dot" style="background:#7d91ee"></i>Income</span><span><i class="dot" style="background:#57c7a1"></i>Expenses</span></div></div>
+<div class="panel"><div class="panel-head"><h2>Monthly budgets</h2><button class="secondary" id="budgetBtn">＋ Set budget</button></div><div id="budgets"></div><p class="hint">Budgets reset each month. Spending is grouped by transaction category.</p></div>
+</section>
+<section class="panel"><div class="panel-head"><h2>Recent transactions</h2><select id="filter"><option value="all">All transactions</option><option value="income">Income only</option><option value="expense">Expenses only</option></select></div><div style="overflow-x:auto"><table><thead><tr><th>DESCRIPTION</th><th>CATEGORY</th><th>DATE</th><th style="text-align:right">AMOUNT</th><th></th></tr></thead><tbody id="transactions"></tbody></table></div></section>
+</main>
+<div class="modal" id="txModal"><form class="dialog" id="txForm"><h2>Add transaction</h2><div class="field"><label>Type</label><select id="type"><option value="expense">Expense</option><option value="income">Income</option></select></div><div class="field"><label>Description</label><input id="desc" placeholder="e.g. Grocery shopping" required maxlength="60"></div><div class="field"><label>Amount (₹)</label><input id="amount" type="number" min=".01" step=".01" placeholder="0.00" required></div><div class="field"><label>Category</label><select id="category"><option>Food</option><option>Transport</option><option>Shopping</option><option>Bills</option><option>Health</option><option>Education</option><option>Salary</option><option>Freelance</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="date" type="date" required></div><div class="actions"><button type="button" class="secondary close">Cancel</button><button type="submit">Save transaction</button></div></form></div>
+<div class="modal" id="budgetModal"><form class="dialog" id="budgetForm"><h2>Set monthly budget</h2><div class="field"><label>Category</label><select id="budgetCategory"><option>Food</option><option>Transport</option><option>Shopping</option><option>Bills</option><option>Health</option><option>Education</option><option>Other</option></select></div><div class="field"><label>Monthly limit (₹)</label><input id="budgetAmount" type="number" min="1" step=".01" required placeholder="e.g. 5000"></div><div class="actions"><button type="button" class="secondary close">Cancel</button><button type="submit">Save budget</button></div></form></div>
+<script>
+const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(n);
+let transactions=JSON.parse(localStorage.getItem('pennywise_transactions')||'[]');
+let budgets=JSON.parse(localStorage.getItem('pennywise_budgets')||'{}');
+const today=()=>new Date().toISOString().slice(0,10);
+function persist(){localStorage.setItem('pennywise_transactions',JSON.stringify(transactions));localStorage.setItem('pennywise_budgets',JSON.stringify(budgets));}
+function render(){
+ const inc=transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0),out=transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+ $('balance').textContent=money(inc-out);$('income').textContent=money(inc);$('expenses').textContent=money(out);$('rate').textContent=(inc?((inc-out)/inc*100):0).toFixed(1)+'%';
+ renderChart();renderBudgets();renderTransactions();
+}
+function renderChart(){
+ const count=+$('period').value,now=new Date(),months=[];
+ for(let i=count-1;i>=0;i--){let d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleString('en',{month:'short'})})}
+ const vals=months.map(m=>({ ...m,inc:0,out:0}));transactions.forEach(t=>{let m=vals.find(v=>v.key===t.date.slice(0,7));if(m)m[t.type==='income'?'inc':'out']+=t.amount});
+ const max=Math.max(1,...vals.flatMap(v=>[v.inc,v.out]));
+ $('chart').innerHTML=vals.map(v=>`<div class="bar-group"><div class="bar" title="Income: ${money(v.inc)}" style="height:${v.inc/max*90}%"></div><div class="bar exp" title="Expenses: ${money(v.out)}" style="height:${v.out/max*90}%"></div><span class="bar-label">${v.label}</span></div>`).join('');
+}
+function renderBudgets(){
+ const month=today().slice(0,7),spent={};transactions.filter(t=>t.type==='expense'&&t.date.slice(0,7)===month).forEach(t=>spent[t.category]=(spent[t.category]||0)+t.amount);
+ const keys=Object.keys(budgets);$('budgets').innerHTML=keys.length?keys.map(k=>{let s=spent[k]||0,b=budgets[k],pct=Math.min(100,s/b*100);return `<div class="budget-row"><div class="budget-top"><strong>${k}</strong><span>${money(s)} / ${money(b)} <button class="danger" data-remove-budget="${k}">×</button></span></div><div class="track"><div class="fill ${s>b?'over':''}" style="width:${pct}%"></div></div></div>`}).join(''):'<div class="empty">No budgets yet. Set a monthly limit to get started.</div>';
+ document.querySelectorAll('[data-remove-budget]').forEach(b=>b.onclick=()=>{delete budgets[b.dataset.removeBudget];persist();render()});
+}
+function renderTransactions(){
+ const filter=$('filter').value,arr=[...transactions].filter(t=>filter==='all'||t.type===filter).sort((a,b)=>b.date.localeCompare(a.date));
+ $('transactions').innerHTML=arr.length?arr.map(t=>`<tr><td><strong>${escapeHtml(t.desc)}</strong></td><td><span class="tag">${escapeHtml(t.category)}</span></td><td>${t.date}</td><td class="amount ${t.type}">${t.type==='income'?'+':'−'}${money(t.amount)}</td><td><button class="danger" data-id="${t.id}" aria-label="Delete transaction">×</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">No transactions yet. Add one to see it here.</td></tr>';
+ document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{transactions=transactions.filter(t=>t.id!==b.dataset.id);persist();render()});
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function show(id){$(id).classList.add('show')}function hide(id){$(id).classList.remove('show')}
+$('addBtn').onclick=()=>{ $('date').value=today();$('txForm').reset();$('date').value=today();show('txModal')};
+$('budgetBtn').onclick=()=>show('budgetModal');
+document.querySelectorAll('.close').forEach(b=>b.onclick=()=>{hide('txModal');hide('budgetModal')});
+document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)hide(m.id)});
+$('txForm').onsubmit=e=>{e.preventDefault();transactions.push({id:crypto.randomUUID(),type:$('type').value,desc:$('desc').value.trim(),amount:+$('amount').value,category:$('category').value,date:$('date').value});persist();hide('txModal');render()};
+$('budgetForm').onsubmit=e=>{e.preventDefault();budgets[$('budgetCategory').value]=+$('budgetAmount').value;persist();hide('budgetModal');render()};
+$('period').onchange=renderChart;$('filter').onchange=renderTransactions;render();
+</script>
+</body></html>
